@@ -5,6 +5,7 @@ import CameraCapture from '../components/CameraCapture';
 import { motion } from 'framer-motion';
 import { languageMap } from '../utils/translations';
 import Tesseract from 'tesseract.js';
+import axios from 'axios';
 
 const ApplicationForm = ({ globalLanguage }) => {
     const { state } = useLocation();
@@ -243,7 +244,7 @@ const ApplicationForm = ({ globalLanguage }) => {
         setIsPhoneVerified(true);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!isPhoneVerified) {
             alert('Please verify your phone number using the captcha before submitting.');
@@ -265,14 +266,9 @@ const ApplicationForm = ({ globalLanguage }) => {
 
         window.speechSynthesis.cancel();
 
-        // Save application to localStorage for My Schemes tracking
-        const STORAGE_KEY = 'mitra_applied_schemes';
-        const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        const newApplication = {
-            id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
+        // Save application to AWS DynamoDB
+        const applicationData = {
             schemeName: schemeName,
-            submittedAt: Date.now(),
-            currentStatus: 'submitted',
             applicantName: formData.fullName,
             age: formData.age,
             stateLoc: formData.stateLoc,
@@ -281,9 +277,14 @@ const ApplicationForm = ({ globalLanguage }) => {
             phone: formData.phone,
             email: formData.email,
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([newApplication, ...existing]));
 
-        setIsSubmitted(true);
+        try {
+            await axios.post(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications/submit`, applicationData);
+            setIsSubmitted(true);
+        } catch (error) {
+            console.error("Failed to submit application to AWS", error);
+            alert("Failed to submit application. Please try again.");
+        }
     };
 
     const speakText = (text, onEnd) => {
@@ -1130,7 +1131,7 @@ const ApplicationForm = ({ globalLanguage }) => {
             app_forwarded: 'آپ کی درخواست بھیج دی گئی ہے۔', return_home: 'ہوم پر جائیں', enter_phone: '+91'
         },
         'bho': {
-             verifyUpload: 'हमरा रउआ दस्तावेज़ से {value} नाम मिलल बा। का ई सही बा? हाँ या ना कहीं।',
+            verifyUpload: 'हमरा रउआ दस्तावेज़ से {value} नाम मिलल बा। का ई सही बा? हाँ या ना कहीं।',
             back: 'पीछे', stop_assistant: 'सहायक रोकीं', auto_fill: 'आवाज से भरल',
             official_form: 'आधिकारिक सत्यापन और आवेदन फॉर्म', full_name: 'पूरा नाम', aadhar_num: 'आधार नंबर',
             mobile_num: 'मोबाइल नंबर', email: 'ईमेल पता', state: 'राज्य', age: 'उमर',

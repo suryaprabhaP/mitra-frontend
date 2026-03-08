@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ClipboardList, CheckCircle2, Clock, AlertCircle, ChevronRight,
@@ -78,19 +79,32 @@ const MySchemes = ({ globalLanguage }) => {
     const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        // Update dynamic statuses
-        const updated = stored.map(app => ({
-            ...app,
-            currentStatus: simulateStatus(app.submittedAt),
-        }));
-        setApplications(updated);
+        const fetchApplications = async () => {
+            try {
+                const response = await axios.get(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications`);
+                const appsFromAWS = response.data;
+
+                const updated = appsFromAWS.map(app => ({
+                    ...app,
+                    id: app.applicationId || app.id,
+                    currentStatus: simulateStatus(new Date(app.timestamp).getTime() || app.submittedAt || Date.now()),
+                    submittedAt: new Date(app.timestamp).getTime() || app.submittedAt || Date.now()
+                }));
+
+                // Sort by most recent
+                updated.sort((a, b) => b.submittedAt - a.submittedAt);
+                setApplications(updated);
+            } catch (error) {
+                console.error("Failed to fetch applications from AWS", error);
+            }
+        };
+
+        fetchApplications();
     }, []);
 
     const handleDelete = (id) => {
         const updated = applications.filter(a => a.id !== id);
         setApplications(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         setDeleteConfirm(null);
     };
 

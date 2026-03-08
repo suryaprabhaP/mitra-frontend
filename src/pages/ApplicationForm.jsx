@@ -90,23 +90,20 @@ const ApplicationForm = ({ globalLanguage }) => {
             let extractedData = {};
 
             // 1. Extract Aadhaar Number
-            // Pattern 1: XXXX XXXX XXXX (allow diverse spaces/hyphens)
-            const aadharPattern1 = text.match(/\b\d{4}[\s-]+\d{4}[\s-]+\d{4}\b/);
-            // Pattern 2: XXXXXXXXXXXX (12 consecutive digits)
-            const aadharPattern2 = text.match(/\b\d{12}\b/);
+            // Remove all entirely non-numeric characters from the string to get a clean stream of digits (but keep spaces/newlines for layout context)
+            const cleanTextForNumber = text.replace(/[^\d\s]/g, '');
+            // Pattern: 4 digits, followed by any amount of whitespace/OCR noise, 4 digits, whitespace, 4 digits
+            const aadharPattern = cleanTextForNumber.match(/(\d{4})\s*(\d{4})\s*(\d{4})/);
 
-            if (aadharPattern1) {
-                extractedData.aadharNumber = aadharPattern1[0].replace(/\D/g, '');
-            } else if (aadharPattern2) {
-                extractedData.aadharNumber = aadharPattern2[0];
+            if (aadharPattern) {
+                // If matched, combine the three 4-digit capture groups
+                extractedData.aadharNumber = aadharPattern[1] + aadharPattern[2] + aadharPattern[3];
             } else {
-                // Heuristic: check if 3 consecutive 4-digit blocks exist in tokens
-                const tokens = text.split(/[\s\n]+/).map(t => t.replace(/\D/g, ''));
-                for (let i = 0; i <= tokens.length - 3; i++) {
-                    if (tokens[i].length === 4 && tokens[i + 1].length === 4 && tokens[i + 2].length === 4) {
-                        extractedData.aadharNumber = tokens[i] + tokens[i + 1] + tokens[i + 2];
-                        break;
-                    }
+                // Fallback: Just look for any 12 consecutive digits in the raw text stream
+                const justDigits = text.replace(/\D/g, '');
+                const twelveDigitsMatch = justDigits.match(/(\d{12})/);
+                if (twelveDigitsMatch) {
+                    extractedData.aadharNumber = twelveDigitsMatch[1];
                 }
             }
 

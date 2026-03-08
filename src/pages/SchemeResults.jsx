@@ -17,7 +17,7 @@ const SchemeResults = ({ globalLanguage }) => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const response = await axios.post(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/schemes/check-eligibility`, {
+                const response = await axios.post(`https://bzrh276laa.execute-api.us-east-1.amazonaws.com/api/schemes/check-eligibility`, {
                     userProfile: state?.userProfile || {}
                 });
                 setSchemes(response.data);

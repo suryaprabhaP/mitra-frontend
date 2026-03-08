@@ -277,7 +277,7 @@ const ApplicationForm = ({ globalLanguage }) => {
         };
 
         try {
-            await axios.post(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications/submit`, applicationData);
+            await axios.post(`https://bzrh276laa.execute-api.us-east-1.amazonaws.com/api/applications/submit`, applicationData);
             setIsSubmitted(true);
         } catch (error) {
             console.error("Failed to submit application to AWS", error);

@@ -20,7 +20,7 @@ const AllSchemesList = ({ globalLanguage }) => {
     const fetchSchemes = async (currentPage = 1) => {
         setLoading(true);
         try {
-            const response = await axios.get(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/schemes/all-csv`, {
+            const response = await axios.get(`https://bzrh276laa.execute-api.us-east-1.amazonaws.com/api/schemes/all-csv`, {
                 params: {
                     page: currentPage,
                     limit: 12,

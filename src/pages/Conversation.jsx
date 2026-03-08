@@ -78,7 +78,7 @@ const Conversation = ({ globalLanguage, setGlobalLanguage }) => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/conversation/message`, {
+            const response = await axios.post(`https://bzrh276laa.execute-api.us-east-1.amazonaws.com/api/conversation/message`, {
                 message: text,
                 history: messages,
                 language: language,

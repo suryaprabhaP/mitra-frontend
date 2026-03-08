@@ -17,7 +17,7 @@ const Home = ({ lang, setLang, isAuthenticated, setIsAuthenticated }) => {
         if (lang) {
             const fetchSchemes = async () => {
                 try {
-                    const response = await axios.get(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/schemes`);
+                    const response = await axios.get(`https://bzrh276laa.execute-api.us-east-1.amazonaws.com/api/schemes`);
                     setSchemes(response.data);
                 } catch (error) {
                     console.error("Error fetching schemes:", error);

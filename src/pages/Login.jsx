@@ -54,6 +54,7 @@ const Login = ({ lang, onLogin }) => {
         setIsLoading(true);
         setTimeout(() => {
             setIsLoading(false);
+            localStorage.setItem('mitra_userPhone', phone);
             onLogin();
         }, 1500);
     }

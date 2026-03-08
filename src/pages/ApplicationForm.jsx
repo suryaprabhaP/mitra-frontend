@@ -276,6 +276,7 @@ const ApplicationForm = ({ globalLanguage }) => {
             income: formData.income,
             phone: formData.phone,
             email: formData.email,
+            userPhone: localStorage.getItem('mitra_userPhone') || formData.phone,
         };
 
         try {

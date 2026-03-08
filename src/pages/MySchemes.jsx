@@ -81,7 +81,12 @@ const MySchemes = ({ globalLanguage }) => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await axios.get(`https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications`);
+                const userPhone = localStorage.getItem('mitra_userPhone');
+                const url = userPhone
+                    ? `https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications?phone=${userPhone}`
+                    : `https://tgff8qr4cc.execute-api.us-east-1.amazonaws.com/api/applications`;
+
+                const response = await axios.get(url);
                 const appsFromAWS = response.data;
 
                 const updated = appsFromAWS.map(app => ({
